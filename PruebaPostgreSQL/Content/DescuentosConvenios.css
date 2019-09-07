@@ -1,0 +1,21 @@
+﻿.hideElement {
+    display: none;
+}
+
+th {
+    white-space: nowrap;
+}
+
+.aling-right {
+    text-align: right;
+}
+
+.marginFloat {
+    margin: 40px;
+}
+
+.barOptionsSiian {
+    margin-right: 0px;
+    margin-top: 60px;
+    z-index: 900;
+}

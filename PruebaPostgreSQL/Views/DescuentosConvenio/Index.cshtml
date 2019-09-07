@@ -1,0 +1,394 @@
+﻿@using DevExtreme.AspNet.Mvc;
+@model dynamic
+@{
+    var lstDescuentos = Model.lstDecuentos;
+}
+<div class="container-fluid">
+    <div class="row">
+        <h2>Generar Descuentos por Convenios</h2>
+    </div>
+    <div class="row">
+        <div class="navbar-right navbar-fixed-top marginFloat barOptionsSiian" align="right">
+            <div class="btn-group" role="group" aria-label="Basic example">
+                <button type="button" class="btn btn-primary"><i class="material-icons">local_printshop</i></button>
+                <button type="button" class="btn btn-primary" id="firtsPage"><i class="material-icons">first_page</i></button>
+                <button type="button" class="btn btn-primary" id="backPage"><i class="material-icons">navigate_before</i></button>
+                <button type="button" class="btn btn-primary" id="newPage"><i class="material-icons">add</i></button>
+                <button type="button" class="btn btn-primary" id="nextPage"><i class="material-icons">navigate_next</i></button>
+                <button type="button" class="btn btn-primary" id="lastPage"><i class="material-icons">last_page</i></button>
+                <button type="button" class="btn btn-primary" id="guardar"><i class="material-icons">save</i></button>
+                <button type="button" class="btn btn-primary" id="aprobar"><i class="material-icons">check</i></button>
+            </div>
+        </div>
+    </div>
+    <input type="hidden" id="jsonObjct" value="@Model.lstDecuentos" />
+    <input type="hidden" id="jsonObjctIndividual" value="@Model.lstDescuentosIndividuales" />
+    <form id="FromData" method="post">
+        <input type="hidden" id="jsonToSend" name="descuentosSaved"/>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label class="control-label" for="tipoDocumento">Tipo Documento</label>
+                    <select class="form-control" id="tipoDocumento" name="TipoDocumento">
+                        @foreach (string item in Model.tipoDocumento)
+                        {
+                            <option value="@Html.DisplayFor(moelitem=> item)">@Html.DisplayFor(moelitem => item)</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label class="control-label" for="proximoNumeroDisponible">Próximo numero disponible</label>
+                    <input class="form-control" type="text" id="proximoNumeroDisponible" name="ProximoNumeroDisponible" value="@Model.proximoNumeroDisponible" disabled />
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label class="control-label" for="fecha">Fecha</label>
+                    <input class="form-control" type="date" id="fecha" name="Fecha" value="@Convert.ToDateTime(Model.fecha).ToString("yyyy-MM-dd")" />
+                    <div id="validatefecha" class="invalid-feedback">Campo requerido.</div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label class="control-label" for="detalle">Detalle</label>
+                    <textarea class="form-control" id="detalle" name="detalle"></textarea>
+                    <div id="validatedetalle" class="invalid-feedback">Campo requerido.</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label class="control-label" for="detalle">Gererar Reporte</label>
+                    @(Html.DevExtreme().ButtonGroup()
+                        //.KeyExpr("alignment")
+                        .StylingMode(ButtonStylingMode.Outlined)
+                        .Items(items =>
+                        {
+                            items.Add().Text("PDF").Icon("exportpdf").Hint("pdf").Option("alignment", "left");
+                            items.Add().Text("Excel").Icon("exportxlsx").Hint("excel").Option("alignment", "center");
+                            items.Add().Text("Plano").Icon("alignjustify").Hint("plain").Option("alignment", "right");
+                            items.Add().Text("Word").Icon("export").Hint("word").Option("alignment", "justify");
+                        })
+                        //.OnItemClick("buttonGroup_ItemClick")
+                    )
+                </div>
+            </div>
+        </div>
+        <ul class="nav nav-tabs">
+            <li class="active"><a id="generalTab"data-toggle="tab" href="#general">General</a></li>
+            <li><a data-toggle="tab" href="#individual">Individual</a></li>
+        </ul>
+        <div class="tab-content">
+            <div id="general" class="tab-pane fade in active">
+                <br />
+                <div class="row">
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label class="control-label" for="vencimientosHasta">Vencimientos Hasta</label>
+                            <input class="form-control" type="date" id="vencimientosHasta" name="vencimientosHasta" value="" />
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label class="control-label" for="sucursal">Sucursal</label>
+                            <select class="form-control select-custom-multiple" id="sucursal" name="sucursal[]" multiple="multiple">
+                                @foreach (string item in Model.sucursalFilter)
+                                {
+                                    <option value="@Html.DisplayFor(moelitem=> item)">@Html.DisplayFor(moelitem => item)</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label class="control-label" for="convenio">Convenio</label>
+                            <input class="form-control" type="text" id="convenio" name="convenio" value="" />
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label class="control-label" for="modulo">Modulo</label>
+                            <input class="form-control" type="text" id="modulo" name="modulo" value="" />
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label class="control-label" for="formaPago">Formade Pago</label>
+                            <input class="form-control" type="text" id="formaPago" name="formaPago" value="" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2">
+                        @(Html.DevExtreme().Button()
+                            .Text("Consultar")
+                            .Type(ButtonType.Default)
+                            .StylingMode(ButtonStylingMode.Contained)
+                            .ID("consultar")
+                            .OnClick("actionBtnConsultarGeneral")
+                        )
+                    </div>
+                    <div class="col-md-2">
+                        @(Html.DevExtreme().Button()
+                            .Text("LimpiarConsulta")
+                            .Type(ButtonType.Normal)
+                            .StylingMode(ButtonStylingMode.Contained)
+                            .ID("limpiarConsulta")
+                            .OnClick("limpiarConsultaConsolidado")
+                        )
+                    </div>
+                </div>
+                <br />
+                <div>
+                    <ul class="nav nav-tabs">
+                        <li class="active"><a data-toggle="tab" href="#consolidadoT">Consolidado</a></li>
+                        <li><a id="detalleTab"data-toggle="tab" href="#detalleT">Detalle</a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div id="consolidadoT" class="tab-pane fade in active">
+                            <br />
+                            <div class="row">
+                                @(Html.DevExtreme().DataGrid()
+                                    .ID("gridContainerConsolidado")
+                                    .DataSource(new JS("descuentosArray"))
+                                    .AccessKey("Id")
+                                    .ShowBorders(true)
+                                    .Columns(c =>
+                                    {
+                                        //c.Add().DataField("Id").AllowEditing(false);
+                                        c.Add().DataField("Sucursal").AllowEditing(false);
+                                        c.Add().DataField("Convenio").AllowEditing(false);
+                                        c.Add().DataField("Identifnicacion").AllowEditing(false);
+                                        c.Add().DataField("Nombre").AllowEditing(false);
+                                        c.Add().DataField("Modulo").AllowEditing(false);
+                                        c.Add().DataField("Concepto").AllowEditing(false);
+                                        c.Add().DataField("Credito").AllowEditing(false);
+                                        c.Add().DataField("FechaVencimiento").Format("dd/MM/yyyy").AllowEditing(false);
+                                        c.Add().DataField("Cuota").AllowEditing(false);
+                                        c.Add().DataField("ValorDistinto").AllowEditing(true).ShowEditorAlways(true);
+                                        c.Add().DataField("ValorDefinitivo").AllowEditing(false);
+                                        c.Add().DataField("FormaPago").AllowEditing(false);
+                                    })
+                                    .OnSelectionChanged("selection_changed_consolidado")
+                                    .Pager(pager => {
+                                        pager.ShowPageSizeSelector(true);
+                                        pager.AllowedPageSizes(
+                                            new List<int> { 5, 10, 20 }
+                                        );
+                                        pager.ShowInfo(true);
+                                    })
+                                    .Sorting(sorting => sorting.Mode(GridSortingMode.Multiple))
+                                    .AllowColumnReordering(true)
+                                    .AllowColumnResizing(true)
+                                    .Selection(s => s.Mode(SelectionMode.Multiple))
+                                    .Editing(m => m.Mode(GridEditMode.Batch).AllowUpdating(true)
+                                    )
+                                )
+                            </div>
+                            <br/>
+                            <div class="row">
+                                <div class="col-md-2">
+                                    @(Html.DevExtreme().Button()
+                                    .Text("Eliminar")
+                                    .Type(ButtonType.Danger)
+                                    .StylingMode(ButtonStylingMode.Contained)
+                                    .ID("eliminarDown")
+                                    .OnClick("elminarRegistroConsolidado")
+                                    )
+                                </div>
+                                <div class="col-md-2">
+                                    @(Html.DevExtreme().Button()
+                                    .Text("Guardar")
+                                    .Type(ButtonType.Success)
+                                    .StylingMode(ButtonStylingMode.Contained)
+                                    .ID("guardarDown")
+                                    .OnClick("guardar")
+                                    )
+                                </div>
+                                <div class="col-md-2">
+                                    @(Html.DevExtreme().Button()
+                                    .Text("Aprobar")
+                                    .Type(ButtonType.Default)
+                                    .StylingMode(ButtonStylingMode.Contained)
+                                    .ID("aprobarDown")
+                                    .OnClick("elminarRegistroConsolidado")
+                                    )
+                                </div>
+                            </div>
+                        </div>
+                        <div id="detalleT" class="tab-pane fade">
+                            <br />
+                            <div class="row">
+                                @(Html.DevExtreme().DataGrid()
+                                    .ID("gridContainerDestalle")
+                                    .DataSource(new JS("descuentosArray"))
+                                    .AccessKey("Id")
+                                    .ShowBorders(true)
+                                    .Columns(c =>
+                                    {
+                                        c.Add().DataField("Sucursal").AllowEditing(false);
+                                        c.Add().DataField("Convenio").AllowEditing(false);
+                                        c.Add().DataField("Identifnicacion").AllowEditing(false);
+                                        c.Add().DataField("Nombre").AllowEditing(false);
+                                        c.Add().DataField("Modulo").AllowEditing(false);
+                                        c.Add().DataField("Concepto").AllowEditing(false);
+                                        c.Add().DataField("Credito").AllowEditing(false);
+                                        c.Add().DataField("FechaVencimiento").Format("dd/MM/yyyy").AllowEditing(false);
+                                        c.Add().DataField("Cuota").AllowEditing(false);
+                                        c.Add().DataField("ValorDefinitivo").AllowEditing(false);
+                                        c.Add().DataField("FormaPago").AllowEditing(false);
+                                    })
+                                    .OnSelectionChanged("selection_changed_consolidado")
+                                    //.Paging(pagin => pagin.PageSize(2))
+                                    .Pager(pager =>
+                                            {
+                                        pager.ShowPageSizeSelector(true);
+                                        pager.AllowedPageSizes(
+                                            new List<int> { 5, 10, 20 }
+                                        );
+                                        pager.ShowInfo(true);
+                                    })
+                                    .Sorting(sorting => sorting.Mode(GridSortingMode.Multiple))
+                                    .AllowColumnReordering(true)
+                                    .AllowColumnResizing(true)
+                                    .Selection(s => s.Mode(SelectionMode.Multiple)
+                                    )
+                                )
+                            </div>
+                            <br/>
+                            <div class="row">
+                                <div class="col-md-2">
+                                    @(Html.DevExtreme().Button()
+                                    .Text("Enviar")
+                                    .Type(ButtonType.Success)
+                                    .StylingMode(ButtonStylingMode.Contained)
+                                    .ID("enviarDown")
+                                    .OnClick("enviarAction")
+                                    )
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="individual" class="tab-pane fade">
+                <br />
+                <div class="row">
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label class="control-label" for="vencimientosHastaI">Vencimientos Hasta</label>
+                            <input class="form-control" type="date" id="vencimientosHastaI" name="vencimientosHastaI" value="" />
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label class="control-label" for="sucursalI">Sucursal</label>
+                            <select class="form-control select-custom-multiple" id="sucursalI" name="sucursalI[]" multiple="multiple">
+                                @foreach (string item in Model.sucursalFilter)
+                                {
+                                    <option value="@Html.DisplayFor(moelitem=> item)">@Html.DisplayFor(moelitem => item)</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label class="control-label" for="convenioI">Convenio</label>
+                            <input class="form-control" type="text" id="convenioI" name="convenioI" value="" />
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label class="control-label" for="identificaionI">Identificación</label>
+                            <input class="form-control" type="text" id="identificaionI" name="identificaionI" value="" />
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label class="control-label" for="moduloI">Modulo</label>
+                            <input class="form-control" type="text" id="moduloI" name="moduloI" value="" />
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label class="control-label" for="formaPagoI">Formade Pago</label>
+                            <input class="form-control" type="text" id="formaPagoI" name="formaPagoI" value="" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        @(Html.DevExtreme().Button()
+                            .Text("Consultar")
+                            .Type(ButtonType.Default)
+                            .StylingMode(ButtonStylingMode.Contained)
+                            .ID("consultarI")
+                            .OnClick("actiondConsultarIndivudual")
+                        )
+                    </div>
+                    <div class="col-md-4">
+                        @(Html.DevExtreme().Button()
+                            .Text("Limpiar")
+                            .Type(ButtonType.Normal)
+                            .StylingMode(ButtonStylingMode.Contained)
+                            .ID("limpiarI")
+                            .OnClick("limpiarConsultaIndividual")
+                        )
+                    </div>
+                </div>
+                <br/>
+                <div class="row hideElement" id="individualDatatable" >
+                    @(Html.DevExtreme().DataGrid()
+                        .ID("gridContainerIndividual")
+                        .DataSource(new JS("descuentosIndividualArray"))
+                        .AccessKey("Id")
+                        .ShowBorders(true)
+                        .Columns(c =>
+                        {
+                            //c.Add().DataField("Id").AllowEditing(false);
+                            c.Add().DataField("Sucursal").AllowEditing(false);
+                            c.Add().DataField("Convenio").AllowEditing(false);
+                            c.Add().DataField("Identifnicacion").AllowEditing(false);
+                            c.Add().DataField("Nombre").AllowEditing(false);
+                            c.Add().DataField("Modulo").AllowEditing(false);
+                            c.Add().DataField("Concepto").AllowEditing(false);
+                            c.Add().DataField("Credito").AllowEditing(false);
+                            c.Add().DataField("FechaVencimiento").Format("dd/MM/yyyy").AllowEditing(false);
+                            c.Add().DataField("Cuota").AllowEditing(false);
+                            c.Add().DataField("ValorDistinto").AllowEditing(true).ShowEditorAlways(true);
+                            c.Add().DataField("ValorDefinitivo").AllowEditing(false);
+                            c.Add().DataField("FormaPago").AllowEditing(false);
+                        })
+                        .OnSelectionChanged("selection_changed_individual")
+                        .Pager(pager =>
+                        {
+                            pager.ShowPageSizeSelector(true);
+                            pager.AllowedPageSizes(
+                                new List<int> { 5, 10, 20 }
+                            );
+                            pager.ShowInfo(true);
+                        })
+                        .Sorting(sorting => sorting.Mode(GridSortingMode.Multiple))
+                        .AllowColumnReordering(true)
+                        .AllowColumnResizing(true)
+                        .Selection(s => s.Mode(SelectionMode.Multiple))
+                        .Editing(m => m.Mode(GridEditMode.Batch).AllowUpdating(true))
+                    )
+                </div>
+                <br/>
+                <div class="row hideElement" id="botonagregarindividual">
+                    @(Html.DevExtreme().Button()
+                            .Text("Adicionar")
+                            .Type(ButtonType.Success)
+                            .StylingMode(ButtonStylingMode.Contained)
+                            .ID("Adcionar")
+                            .OnClick("adicionar")
+                        )
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
