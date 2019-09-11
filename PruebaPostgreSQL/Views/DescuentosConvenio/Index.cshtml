@@ -72,8 +72,8 @@
                             items.Add().Text("Plano").Icon("alignjustify").Hint("plain").Option("alignment", "right");
                             items.Add().Text("Word").Icon("export").Hint("word").Option("alignment", "justify");
                         })
-                        //.OnItemClick("buttonGroup_ItemClick")
-                    )
+                        .OnItemClick("buttonGroup_ItemClick")
+                        )
                 </div>
             </div>
         </div>
@@ -185,6 +185,7 @@
                                     .AllowColumnResizing(true)
                                     .Selection(s => s.Mode(SelectionMode.Multiple))
                                     .Editing(m => m.Mode(GridEditMode.Batch).AllowUpdating(true)
+                                    
                                     )
                                 )
                             </div>
@@ -238,13 +239,13 @@
                                         c.Add().DataField("Credito").AllowEditing(false);
                                         c.Add().DataField("FechaVencimiento").Format("dd/MM/yyyy").AllowEditing(false);
                                         c.Add().DataField("Cuota").AllowEditing(false);
-                                        c.Add().DataField("ValorDefinitivo").AllowEditing(false);
+                                        c.Add().DataField("ValorDefinitivo").AllowEditing(false).Format(Format.Currency);
                                         c.Add().DataField("FormaPago").AllowEditing(false);
                                     })
                                     .OnSelectionChanged("selection_changed_consolidado")
                                     //.Paging(pagin => pagin.PageSize(2))
                                     .Pager(pager =>
-                                            {
+                                    {
                                         pager.ShowPageSizeSelector(true);
                                         pager.AllowedPageSizes(
                                             new List<int> { 5, 10, 20 }
@@ -256,6 +257,12 @@
                                     .AllowColumnResizing(true)
                                     .Selection(s => s.Mode(SelectionMode.Multiple)
                                     )
+                                    //.Summary(s => s.TotalItems(items => {
+                                    //    items.AddFor(m => m.ValorDefinitivo)
+                                    //    .SummaryType(SummaryType.Sum)
+                                    //    .ValueFormat(Format.Currency);
+                                    //})
+                                        )
                                 )
                             </div>
                             <br/>

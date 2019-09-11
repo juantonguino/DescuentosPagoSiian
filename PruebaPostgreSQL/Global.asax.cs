@@ -14,6 +14,7 @@ namespace PruebaPostgreSQL
     {
         protected void Application_Start()
         {
+            DevExpress.XtraReports.Web.WebDocumentViewer.Native.WebDocumentViewerBootstrapper.SessionState = System.Web.SessionState.SessionStateBehavior.Disabled;
             
             
             DevExtremeBundleConfig.RegisterBundles(BundleTable.Bundles);
@@ -26,7 +27,8 @@ namespace PruebaPostgreSQL
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
             MappingConfig.RegisterMaps();
-            
+
+            DevExpress.Web.Mvc.MVCxWebDocumentViewer.StaticInitialize();
         }
     }
 }

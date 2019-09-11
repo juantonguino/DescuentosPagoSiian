@@ -1,0 +1,186 @@
+﻿@using Microsoft.AspNet.Identity
+
+@if (Request.IsAuthenticated)
+{
+    <!DOCTYPE html>
+    <html>
+    <head>
+
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="description" content="">
+        <meta name="author" content="">
+
+        <title>AppCredito</title>
+        <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+
+      
+
+        @*@Styles.Render("~/Content/bundle")
+        @Styles.Render("~/Content/DevExtremeBundle")
+        @Scripts.Render("~/Scripts/bundle")
+        @Scripts.Render("~/Scripts/DevExtremeBundle")*@
+        
+
+        @Html.DevExpress().GetStyleSheets(
+                new StyleSheet { ExtensionSuite = ExtensionSuite.NavigationAndLayout },
+                new StyleSheet { ExtensionSuite = ExtensionSuite.Editors },
+                new StyleSheet { ExtensionSuite = ExtensionSuite.Report }
+            )
+
+        @Html.DevExpress().GetScripts(
+            new Script { ExtensionSuite = ExtensionSuite.NavigationAndLayout },
+            new Script { ExtensionSuite = ExtensionSuite.Editors },
+            new Script { ExtensionSuite = ExtensionSuite.Report }
+        )
+
+    </head>
+    <body class="nav-md">
+        
+                        @RenderBody()
+        
+
+        @RenderSection("scripts", required: false)
+    </body>
+</html>
+}
+else
+{
+
+<html>
+<head>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>AppCredito</title>
+    <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+
+
+    <link href="~/vendors/animate.css/animate.min.css" rel="stylesheet">
+
+    <link href="~/vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="~/vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <!-- NProgress -->
+    <link href="~/vendors/nprogress/nprogress.css" rel="stylesheet">
+    <!-- iCheck -->
+    <link href="~/vendors/iCheck/skins/flat/green.css" rel="stylesheet">
+
+    <!-- bootstrap-progressbar -->
+    <link href="~/vendors/bootstrap-progressbar/css/bootstrap-progressbar-3.3.4.min.css" rel="stylesheet">
+    <!-- JQVMap -->
+    <link href="~/vendors/jqvmap/dist/jqvmap.min.css" rel="stylesheet" />
+    <!-- bootstrap-daterangepicker -->
+    <link href="~/vendors/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet">
+    <!-- Custom Theme Style -->
+    <link href="~/build/css/custom.min.css" rel="stylesheet">
+
+    @Styles.Render("~/Content/bundle")
+    @Styles.Render("~/Content/DevExtremeBundle")
+    @Scripts.Render("~/Scripts/bundle")
+    @Scripts.Render("~/Scripts/DevExtremeBundle")
+
+</head>
+<body class="login">
+    <div>
+        <a class="hiddenanchor" id="signup"></a>
+        <a class="hiddenanchor" id="signin"></a>
+        <div class="login_wrapper">
+            @RenderBody()
+        </div>
+    </div>
+
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <!-- Bootstrap -->
+    <script src="~/vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+    <!-- FastClick -->
+    <script src="~/vendors/fastclick/lib/fastclick.js"></script>
+    <!-- NProgress -->
+    <script src="~/vendors/nprogress/nprogress.js"></script>
+    <!-- Chart.js -->
+    <!-- <script src="~/vendors/Chart.js/dist/Chart.min.js"></script> -->
+    <!-- gauge.js -->
+    <script src="~/vendors/gauge.js/dist/gauge.min.js"></script>
+    <!-- bootstrap-progressbar -->
+    <script src="~/vendors/bootstrap-progressbar/bootstrap-progressbar.min.js"></script>
+    <!-- iCheck -->
+    <script src="~/vendors/iCheck/icheck.min.js"></script>
+    <!-- Skycons -->
+    <script src="~/vendors/skycons/skycons.js"></script>
+    <!-- Flot -->
+    <script src="~/vendors/Flot/jquery.flot.js"></script>
+    <!-- <script src="~/vendors/Flot/jquery.flot.pie.js"></script> -->
+    <script src="~/vendors/Flot/jquery.flot.time.js"></script>
+    <!-- <script src="~/vendors/Flot/jquery.flot.stack.js"></script> -->
+    <!-- <script src="~/vendors/Flot/jquery.flot.resize.js"></script> -->
+    <!-- Flot plugins -->
+    <!-- <script src="~/vendors/flot.orderbars/js/jquery.flot.orderBars.js"></script> -->
+    <script src="~/vendors/flot-spline/js/jquery.flot.spline.min.js"></script>
+    <!-- <script src="~/vendors/flot.curvedlines/curvedLines.js"></script> -->
+    <!-- DateJS -->
+    <script src="~/vendors/DateJS/build/date.js"></script>
+    <!-- JQVMap -->
+    <script src="~/vendors/jqvmap/dist/jquery.vmap.js"></script>
+    <script src="~/vendors/jqvmap/dist/maps/jquery.vmap.world.js"></script>
+    <script src="~/vendors/jqvmap/examples/js/jquery.vmap.sampledata.js"></script>
+    <!-- bootstrap-daterangepicker -->
+    <script src="~/vendors/moment/min/moment.min.js"></script>
+    <script src="~/vendors/bootstrap-daterangepicker/daterangepicker.js"></script>
+    <!-- Custom Theme Scripts -->
+    <script src="~/build/js/custom.js"></script>
+
+    @RenderSection("scripts", required: false)
+
+</body>
+</html>
+
+}
+@*@helper MuestraMenu(IEnumerable<Entities.Generales.ViewModels.MenuGeneralViewModel> menus)
+    {
+
+        foreach (var item in menus)
+        {
+            <li>
+                @if (!item.Espadre)
+                {
+
+                    <a href=@Url.Content(item.Funcionalidad)><i class="fa fa-home"></i> @item.Nombre</a>
+                }
+                else
+                {
+                    <a><i class="fa fa-edit"></i>@item.Nombre<span class="fa fa-chevron-down"></span></a>
+                    @Subitems(item)
+                }
+            </li>
+        }
+
+    }
+    }
+    @helper Subitems(Entities.Generales.ViewModels.MenuGeneralViewModel submenu)
+    {
+        if (submenu.ListaMenuGeneral.Count > 0)
+        {
+            <ul class="nav child_menu">
+                @foreach (var x in submenu.ListaMenuGeneral)
+                {
+                    if (x.Espadre)
+                    {
+                        <li>
+                        <a>@x.Nombre<span class="fa fa-chevron-down"></span></a>
+                        @Subitems(x)
+                        </li>
+                    }
+                    else
+                    {
+                        <li><a href=@Url.Content(x.Funcionalidad)>@x.Nombre</a></li>
+                    }
+                }
+
+            </ul>
+        }
+    }*@

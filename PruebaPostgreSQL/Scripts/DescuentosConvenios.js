@@ -213,7 +213,7 @@ function validateForm() {
     }
     return retorno;
 }
-
+//metodo importante para enviar a controlador los datos capturados
 function enviarAction(e) {
     if (validateForm()) {
         sendFrom("Create");
@@ -229,4 +229,193 @@ function sendFrom(route) {
     $("#proximoNumeroDisponible").removeAttr("disabled");
     $("#FromData").attr("action", route);
     $("#FromData").submit();
+}
+
+function exportWordFile(){
+    let preHtml = `
+        < html xmlns: o = 'urn:schemas-microsoft-com:office:office' xmlns: w = 'urn:schemas-microsoft-com:office:word' xmlns = 'http://www.w3.org/TR/REC-html40' >
+            <head>
+                <meta charset='utf-8'>
+                <title>Export HTML To Doc</title>
+                <style>
+                    @page row {
+                        size:841.7pt 595.45pt;mso-page-orientation:
+                        landscape;margin:1.25in 1.0in 1.25in 1.0in;mso-header-margin:.5in;
+                        mso-footer-margin:.5in;mso-paper-source:0;}
+                    div.row {page:row;}
+                </style>
+            </head>
+            <body>`;
+    let postHtml = `
+            </body>
+        </html>`;
+    let table = `
+        <div class="row">
+            <h1>Listado de Descuentos</h1>
+        </div>
+        `;
+
+    var html = preHtml + table+ buildTableReport()+ postHtml;
+
+    var blob = new Blob(['\ufeff', html], {
+        type: 'application/msword'
+    });
+    
+    // Specify link url
+    var url = 'data:application/vnd.ms-word;charset=utf-8,' + encodeURIComponent(html);
+    
+    // Specify file name
+    filename = 'Descuentos.doc';
+    
+    // Create download link element
+    var downloadLink = document.createElement("a");
+
+    document.body.appendChild(downloadLink);
+    
+    if(navigator.msSaveOrOpenBlob ){
+        navigator.msSaveOrOpenBlob(blob, filename);
+    }else{
+        // Create a link to the file
+        downloadLink.href = url;
+        
+        // Setting the file name
+        downloadLink.download = filename;
+        
+        //triggering the function
+        downloadLink.click();
+    }
+    
+    document.body.removeChild(downloadLink);
+}
+
+function buildTableReport() {
+    let headerTable = `
+    <div class="row">
+        <table class="">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Sucursal</th>
+                    <th>Convenio</th>
+                    <th>Identifnicacion</th>
+                    <th>Nombre</th>
+                    <th>Modulo</th>
+                    <th>Concepto</th>
+                    <th>Credito</th>
+                    <th>Fecha Vencimiento</th>
+                    <th>Cuota</th>
+                    <th>ValorDefinitivo</th>
+                    <th>Forma de Pago</th>
+                </tr>
+            </thead>
+            <tbody>`;
+    let footerTable = `
+            </tbody>
+        </table>
+    </div>`;
+    return headerTable + createRow() + footerTable;
+}
+
+function createRow() {
+    let listRow = ``;
+    for (i = 0; i < descuentosArray.length; i++) {
+        listRow = listRow + `
+        <tr>
+            <td>`+ descuentosArray[i].Id + `</td>
+            <td>`+ descuentosArray[i].Sucursal + `</td>
+            <td>`+ descuentosArray[i].Convenio + `</td>
+            <td>`+ descuentosArray[i].Identifnicacion + `</td>
+            <td>`+ descuentosArray[i].Nombre + `</td>
+            <td>`+ descuentosArray[i].Modulo + `</td>
+            <td>`+ descuentosArray[i].Concepto + `</td>
+            <td>`+ descuentosArray[i].Credito + `</td>
+            <td>`+ descuentosArray[i].FechaVencimiento.toISOString().substring(0, 10) + `</td>
+            <td>`+ descuentosArray[i].Cuota + `</td>
+            <td>`+ descuentosArray[i].ValorDefinitivo + `</td>
+            <td>`+ descuentosArray[i].FormaPago + `</td>
+        </tr >`;
+    }
+    return listRow;
+}
+
+function exportCVSFile() {
+    let arrayContent = [["Listado Descuentos"],["Id;Sucursal;Convenio;Identifnicacion;Nombre;Modulo;Concepto;Credito;FechaVencimiento;Cuota;ValorDefinitivo;FormaPago"]];
+    for (i = 0; i < descuentosArray.length; i++) {
+        let temmpArray=[descuentosArray[i].Id + ";" +
+            descuentosArray[i].Sucursal + ";" +
+            descuentosArray[i].Convenio + ";" +
+            descuentosArray[i].Identifnicacion + ";" +
+            descuentosArray[i].Nombre + ";" +
+            descuentosArray[i].Modulo + ";" +
+            descuentosArray[i].Concepto + ";" +
+            descuentosArray[i].Credito + ";" +
+            descuentosArray[i].FechaVencimiento.toISOString().substring(0, 10) + ";" +
+            descuentosArray[i].Cuota + ";" +
+            descuentosArray[i].ValorDefinitivo + ";" +
+            descuentosArray[i].FormaPago];
+        arrayContent.push(temmpArray);
+    }
+    let csvContent = arrayContent.join("\n");
+    let link = window.document.createElement("a");
+    link.setAttribute("href", "data:text/csv;charset=utf-8,%EF%BB%BF" + encodeURI(csvContent));
+    link.setAttribute("download", "Descuentos.csv");
+    link.click(); 
+}
+
+function exportPlainFile() {
+    let arrayContent = [["Listado Descuentos"], ["Id;Sucursal;Convenio;Identifnicacion;Nombre;Modulo;Concepto;Credito;FechaVencimiento;Cuota;ValorDefinitivo;FormaPago"]];
+    for (i = 0; i < descuentosArray.length; i++) {
+        let temmpArray = [descuentosArray[i].Id + ";" +
+            descuentosArray[i].Sucursal + ";" +
+            descuentosArray[i].Convenio + ";" +
+            descuentosArray[i].Identifnicacion + ";" +
+            descuentosArray[i].Nombre + ";" +
+            descuentosArray[i].Modulo + ";" +
+            descuentosArray[i].Concepto + ";" +
+            descuentosArray[i].Credito + ";" +
+            descuentosArray[i].FechaVencimiento.toISOString().substring(0, 10) + ";" +
+            descuentosArray[i].Cuota + ";" +
+            descuentosArray[i].ValorDefinitivo + ";" +
+            descuentosArray[i].FormaPago];
+        arrayContent.push(temmpArray);
+    }
+    let csvContent = arrayContent.join("\n\r");
+    let link = window.document.createElement("a");
+    link.setAttribute("href", "data:text/plain;charset=utf-8,%EF%BB%BF" + encodeURI(csvContent));
+    link.setAttribute("download", "Descuentos.txt");
+    link.click();
+}
+
+function exportPDFFile() {
+    //var head = [["ID", "Country", "Rank", "Capital"]];
+    let head=[["Id","Sucursal","Convenio","Identifnicacion","Nombre","Modulo","Concepto","Credito","FechaVencimiento","Cuota","ValorDefinitivo","FormaPago"]];
+    var body = [];
+    for (i = 0; i < descuentosArray.length; i++) {
+        let temmpArray = [descuentosArray[i].Id,
+            descuentosArray[i].Sucursal,
+            descuentosArray[i].Convenio,
+            descuentosArray[i].Identifnicacion,
+            descuentosArray[i].Nombre,
+            descuentosArray[i].Modulo,
+            descuentosArray[i].Concepto,
+            descuentosArray[i].Credito,
+            descuentosArray[i].FechaVencimiento.toISOString().substring(0, 10),
+            descuentosArray[i].Cuota,
+            descuentosArray[i].ValorDefinitivo,
+            descuentosArray[i].FormaPago];
+        body.push(temmpArray);
+    }
+    var doc = new jsPDF('l', 'mm', 'a4');
+    doc.text(15, 15, "Listado de Descuentos");
+    //doc.autoTable({ head: head, body: body });
+    doc.autoTable({ head: head, body: body, startY: 20, showHead: 'firstPage'});
+    doc.output("dataurlnewwindow");
+}
+
+function buttonGroup_ItemClick(e) {
+    let event = e.itemData.hint;
+    if (event === "pdf") { exportPDFFile(); }
+    if (event === "excel") { exportCVSFile(); }
+    if (event === "plain") { exportPlainFile(); }
+    if (event === "word") { exportWordFile(); }
 }
