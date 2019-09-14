@@ -12,21 +12,21 @@ namespace PruebaPostgreSQL.Controllers
 {
     public class DescuentosConvenioController : Controller
     {
-        private List<DescuentoPorConvenio> _arrayListDescuentos;
+        public List<DescuentoPorConvenio> _arrayListDescuentos { get; set; }
 
-        private List<DescuentoPorConvenio> _lstDescuentosIndividuales;
+        public List<DescuentoPorConvenio> _lstDescuentosIndividuales { get; set; }
 
-        private string[] _lstSucursalesFilter;
+        public string[] _lstSucursalesFilter { get; set; }
 
-        private int _proximoNumeroDisponible;
+        public int _proximoNumeroDisponible { get; set; }
 
-        private string[] _tipoDocuemnto;
+        public string[] _tipoDocuemnto { get; set; }
 
-        private string _detalle;
+        public string _detalle { get; set; }
 
-        private DateTime _fecha;
+        public DateTime _fecha { get; set; }
 
-        private string _tipoDocumento;
+        private string _tipoDocumentoSelected;
 
         // GET: DescuentosConvenio
         public ActionResult Index()
@@ -161,7 +161,7 @@ namespace PruebaPostgreSQL.Controllers
             try
             {
                 // TODO: Add insert logic here
-                _tipoDocumento=collection["TipoDocumento"];
+                _tipoDocumentoSelected=collection["TipoDocumento"];
                 _detalle = collection["detalle"];
                 _fecha=DateTime.ParseExact(collection["Fecha"], "yyyy-MM-dd", CultureInfo.InvariantCulture);
                 _proximoNumeroDisponible = int.Parse(collection["ProximoNumeroDisponible"]);
@@ -174,6 +174,110 @@ namespace PruebaPostgreSQL.Controllers
             {
                 return View();
             }
+        }
+
+        [HttpPost]
+        public ActionResult Guardar(FormCollection collection)
+        {
+            _tipoDocumentoSelected = collection["TipoDocumento"];
+            _detalle = collection["detalle"];
+            _fecha = DateTime.ParseExact(collection["Fecha"], "yyyy-MM-dd", CultureInfo.InvariantCulture);
+            _proximoNumeroDisponible = int.Parse(collection["ProximoNumeroDisponible"]);
+            string tempDescuentos = collection["descuentosSaved"];
+            List<DescuentoPorConvenio> resutlt = JsonConvert.DeserializeObject<List<DescuentoPorConvenio>>(tempDescuentos);
+            _arrayListDescuentos = resutlt;
+
+            Session["_tipoDocumentoSelected"] =_tipoDocumentoSelected;
+            Session["_detalle"] =_detalle;
+            Session["_fecha"] = collection["Fecha"];
+            Session["_proximoNumeroDisponible"] =_proximoNumeroDisponible;
+            Session["_arrayListDescuentos"] = collection["descuentosSaved"];
+
+            return RedirectToAction("Enviar");
+        }
+
+        [HttpGet]
+        public ActionResult Enviar()
+        {
+            _tipoDocuemnto = new string[] { Session["_tipoDocumentoSelected"].ToString()};
+            _detalle = Session["_detalle"].ToString();
+            _fecha = DateTime.ParseExact(Session["_fecha"].ToString(), "yyyy-MM-dd", CultureInfo.InvariantCulture);
+            _proximoNumeroDisponible = int.Parse(Session["_proximoNumeroDisponible"].ToString());
+            string tempDescuentos = Session["_arrayListDescuentos"].ToString();
+            List<DescuentoPorConvenio> resutlt = JsonConvert.DeserializeObject<List<DescuentoPorConvenio>>(tempDescuentos);
+            _arrayListDescuentos = resutlt;
+            _lstSucursalesFilter = new string[] { "Pasto", "Cali", "Bogota" };
+
+            _lstDescuentosIndividuales = new List<DescuentoPorConvenio>() {
+                new DescuentoPorConvenio(){
+                    Id=4,
+                    Sucursal="Pasto",
+                    Convenio="Convenio1",
+                    Identifnicacion="1085309822",
+                    Nombre="juan",
+                    Modulo="modulo1",
+                    Concepto="conepto1",
+                    Credito="credito1",
+                    FechaVencimiento= DateTime.Now,
+                    Cuota="130,000",
+                    ValorDefinitivo="130,000",
+                    FormaPago="Efecivo",
+                    ValorDistinto=""
+                },
+                new DescuentoPorConvenio(){
+                    Id=5,
+                    Sucursal="Cali",
+                    Convenio="Convenio2",
+                    Identifnicacion="1085309824",
+                    Nombre="diego",
+                    Modulo="modulo2",
+                    Concepto="conepto2",
+                    Credito="credito2",
+                    FechaVencimiento= DateTime.Now,
+                    Cuota="149,000",
+                    ValorDefinitivo="149,000",
+                    FormaPago="tarjeta",
+                    ValorDistinto=""
+                },
+                new DescuentoPorConvenio(){
+                    Id=6,
+                    Sucursal="Bogota",
+                    Convenio="Convenio3",
+                    Identifnicacion="1085309825",
+                    Nombre="Hernan",
+                    Modulo="modulo3",
+                    Concepto="conepto3",
+                    Credito="credito3",
+                    FechaVencimiento= DateTime.Now,
+                    Cuota="150,000",
+                    ValorDefinitivo="150,000",
+                    FormaPago="efectivo",
+                    ValorDistinto=""
+                }
+            };
+
+            dynamic render = new ExpandoObject();
+            render.lstDecuentos = JsonConvert.SerializeObject(_arrayListDescuentos);
+            render.lstDescuentosIndividuales = _lstDescuentosIndividuales;
+            render.proximoNumeroDisponible = _proximoNumeroDisponible;
+            render.sucursalFilter = _lstSucursalesFilter;
+            render.tipoDocumento = _tipoDocuemnto;
+            render.descripcion = _detalle;
+            render.fecha = _fecha;
+            return View(render);
+        }
+
+        [HttpPost]
+        public ActionResult Enviar(FormCollection collection)
+        {
+            _tipoDocumentoSelected = collection["TipoDocumento"];
+            _detalle = collection["detalle"];
+            _fecha = DateTime.ParseExact(collection["Fecha"], "yyyy-MM-dd", CultureInfo.InvariantCulture);
+            _proximoNumeroDisponible = int.Parse(collection["ProximoNumeroDisponible"]);
+            string tempDescuentos = collection["descuentosSaved"];
+            List<DescuentoPorConvenio> resutlt = JsonConvert.DeserializeObject<List<DescuentoPorConvenio>>(tempDescuentos);
+            _arrayListDescuentos = resutlt;
+            return RedirectToAction("Index");
         }
 
         // GET: DescuentosConvenio/Edit/5

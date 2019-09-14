@@ -4848,6 +4848,7 @@
     <Content Include="Views\DescuentosConvenio\Create.cshtml" />
     <Content Include="_LayoutReportes.cshtml" />
     <Content Include="Views\Shared\_LayoutReportes.cshtml" />
+    <Content Include="Views\DescuentosConvenio\Enviar.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

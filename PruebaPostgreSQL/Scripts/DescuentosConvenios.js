@@ -170,7 +170,8 @@ function guardar(e) {
     getDataGridInstance().saveEditData(); 
     updateArrayConsolidado();
     getDataDetalleInstance().refresh();
-    $('#detalleTab').click();
+    //$('#detalleTab').click();
+    sendFrom("DescuentosConvenio/Guardar");
 }
 
 function updateArrayConsolidado() {
@@ -213,11 +214,10 @@ function validateForm() {
     }
     return retorno;
 }
+
 //metodo importante para enviar a controlador los datos capturados
 function enviarAction(e) {
-    if (validateForm()) {
-        sendFrom("Create");
-    }
+    sendFrom("Enviar");
 }
 
 function formatNumbrer(number) {
@@ -225,10 +225,12 @@ function formatNumbrer(number) {
 }
 
 function sendFrom(route) {
-    $("#jsonToSend").val(JSON.stringify(descuentosArray));
-    $("#proximoNumeroDisponible").removeAttr("disabled");
-    $("#FromData").attr("action", route);
-    $("#FromData").submit();
+    if (validateForm()) {
+        $("#jsonToSend").val(JSON.stringify(descuentosArray));
+        $("#proximoNumeroDisponible").removeAttr("disabled");
+        $("#FromData").attr("action", route);
+        $("#FromData").submit();
+    }
 }
 
 function exportWordFile(){
